@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For My Valentine</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffc0cb;
+      overflow: hidden;
+    }
+
+    /* iOS SAFE HEIGHT FIX */
+    .page {
+      display: none;
+      min-height: 100svh;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    .page.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    h1 {
+      color: white;
+      margin-bottom: 25px;
+      font-size: clamp(24px, 6vw, 40px);
+    }
+
+    .btn-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 18px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      background: #ff4d6d;
+      color: white;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    .rose-page {
+      position: relative;
+      background: linear-gradient(180deg, #ff5f7e, #ff8fa3);
+      color: white;
+      padding: 20px 16px;
+    }
+
+    h2 {
+      font-size: clamp(28px, 7vw, 48px);
+      font-weight: bold;
+      margin-bottom: 20px;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #fff; }
+      to { text-shadow: 0 0 25px #ffd1dc; }
+    }
+
+    .image-container img {
+      width: 70vw;
+      max-width: 320px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      animation: zoomIn 1.5s ease;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .letter {
+      margin-top: 20px;
+      width: 90%;
+      max-width: 600px;
+      background: rgba(255,255,255,0.25);
+      padding: 18px;
+      border-radius: 20px;
+      animation: slideUp 1.2s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* PERFORMANCE SAFE HEARTS */
+    .heart {
+      position: fixed;
+      bottom: -10%;
+      width: 18px;
+      height: 18px;
+      background: rgba(255,255,255,0.8);
+      transform: rotate(45deg);
+      animation: float 6s linear infinite;
+      pointer-events: none;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      width: 18px;
+      height: 18px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%;
+      position: absolute;
+    }
+
+    .heart::before { top: -9px; }
+    .heart::after { left: -9px; }
+
+    @keyframes float {
+      from { bottom: -10%; opacity: 0; }
+      to { bottom: 110%; opacity: 1; }
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- PAGE 1 -->
+  <div class="page active" id="page1">
+    <h1>PRIOMI Will you be my Valentine? 💖</h1>
+    <div class="btn-container">
+      <button onclick="goToRosePage()">Yes</button>
+      <button onclick="goToRosePage()">Yes</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page rose-page" id="page2">
+    <h2>Happy Rose Day 🌹</h2>
+
+    <div class="image-container">
+      <img src="IMG_6786.jpeg" alt="Her Picture" />
+    </div>
+
+    <div class="letter">
+      <p>
+        Me and my prettiest Rose 🌹<br><br>
+        You're just too good to be true 🤌<br><br>
+        Can't take my eyes off you 👀<br><br>
+        Happy Rose Day Jaanuuuuuuu ❤️<br><br>
+        Yours,<br>RIHAB
+      </p>
+    </div>
+
+    <!-- 🔒 AUDIO SECTION (UNCHANGED AS REQUESTED) -->
+    <audio id="bgMusic">
+      <source src="Frankie Valli - Can_t Take My Eyes Off You (Official Audio)(MP3_160K).mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- AUDIO SETTINGS (UNCHANGED) -->
+    <script>
+      const startTime = 90;
+      const endTime = 150;
+    </script>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    let heartsCreated = false;
+
+    function goToRosePage() {
+      document.getElementById('page1').classList.remove('active');
+      document.getElementById('page2').classList.add('active');
+
+      const music = document.getElementById('bgMusic');
+      music.currentTime = startTime;
+      music.volume = 0;
+      music.play();
+      fadeInMusic(music);
+
+      music.addEventListener('timeupdate', () => {
+        if (music.currentTime >= endTime) {
+          music.currentTime = startTime;
+        }
+      }, { once: true });
+
+      if (!heartsCreated) {
+        createHearts();
+        heartsCreated = true;
+      }
+    }
+
+    function fadeInMusic(audio) {
+      let vol = 0;
+      const fade = setInterval(() => {
+        if (vol < 0.6) {
+          vol += 0.02;
+          audio.volume = vol;
+        } else {
+          clearInterval(fade);
+        }
+      }, 200);
+    }
+
+    function createHearts() {
+      for (let i = 0; i < 20; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+        document.body.appendChild(heart);
+      }
+    }
+  </script>
+
+</body>
+</html>
